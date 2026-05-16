@@ -1,0 +1,56 @@
+# ---- macOS / editors ----
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+.playwright-mcp/
+
+# ---- secrets / env ----
+.env
+.env.*
+!.env.example
+
+# ---- Node / JS ----
+node_modules/
+dist/
+build/
+.vite/
+.cache/
+coverage/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Hardhat / Solidity ----
+artifacts/
+cache/
+typechain/
+typechain-types/
+contracts/deployments/*.json
+!contracts/deployments/.gitkeep
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.python-version
+
+# ---- Playwright / Claude scratch ----
+.playwright-mcp/
+playwright-report/
+test-results/
+
+# ---- Misc artefacts ----
+*.png
+!frontend/public/**/*.png
+!docs/**/*.png
