@@ -28,23 +28,42 @@ export default function QuestList({ quests, onPickQuest }) {
           <article key={q.id} className={"card quest " + (done ? "done" : "")}>
             <div className="quest-art" style={{ backgroundImage: `url(${q.badgeImage})` }}>
               <span className={"quest-kind " + q.kind}>{q.kind}</span>
+              {done && <span className="claimed-stamp">Claimed</span>}
             </div>
             <div className="card-body">
+              <div className="quest-meta">
+                <span>Quest #{q.id}</span>
+                <span>{q.kind === "image" ? "Photo proof" : "Text proof"}</span>
+              </div>
               <h3>{q.title}</h3>
               <p>{q.description}</p>
-              <button
-                className={"btn " + (done ? "ghost" : "primary")}
-                onClick={() => !done && onPickQuest(q)}
-                disabled={done}
-              >
-                {done ? "Badge claimed ✓" : "Submit proof →"}
-              </button>
+              <div className="card-action">
+                <button
+                  className={"btn " + (done ? "ghost" : "primary")}
+                  onClick={() => !done && onPickQuest(q)}
+                  disabled={done}
+                >
+                  {done ? "Badge claimed" : "Submit proof"}
+                </button>
+              </div>
             </div>
           </article>
         );
       })}
       {!quests.length && (
-        <div className="card placeholder">Loading quests from backend…</div>
+        <>
+          {[0, 1, 2].map((i) => (
+            <div className="card quest skeleton" key={i} aria-label="Loading quest">
+              <div className="quest-art" />
+              <div className="card-body">
+                <div className="skeleton-line short" />
+                <div className="skeleton-line" />
+                <div className="skeleton-line mid" />
+                <div className="skeleton-button" />
+              </div>
+            </div>
+          ))}
+        </>
       )}
     </div>
   );

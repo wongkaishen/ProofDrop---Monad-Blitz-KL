@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useAccount,
   useChainId,
@@ -68,6 +68,11 @@ export default function App() {
 
   const onWrongNetwork = isConnected && chainId !== monadTestnet.id;
   const friendlyConnectError = userTriedConnect ? describeConnectError(connectError) : null;
+  const questSummary = useMemo(() => {
+    const image = quests.filter((q) => q.kind === "image").length;
+    const text = quests.filter((q) => q.kind === "text").length;
+    return { total: quests.length, image, text };
+  }, [quests]);
 
   const handleConnect = () => {
     setUserTriedConnect(true);
@@ -92,13 +97,36 @@ export default function App() {
 
       <main className="container">
         <section className="hero">
-          <span className="badge-pill">Built on Monad Testnet · Chain {monadTestnet.id}</span>
-          <h1>Prove it. Mint it.</h1>
-          <p className="subtitle">
-            ProofDrop turns small real-world actions into on-chain NFT badges.
-            Complete a quest, upload your proof, let our AI confirm it — then claim
-            your badge on the Monad blockchain.
-          </p>
+          <div className="hero-copy">
+            <span className="badge-pill">Monad Testnet · Chain {monadTestnet.id}</span>
+            <h1>Proof-gated badges for real actions.</h1>
+            <p className="subtitle">
+              Pick a quest, submit text or photo proof, and mint once the verifier
+              signs your claim voucher.
+            </p>
+            <div className="hero-actions">
+              <button
+                className="btn primary big"
+                onClick={isConnected ? undefined : handleConnect}
+                disabled={isConnected}
+              >
+                {isConnected ? "Wallet connected" : "Connect wallet"}
+              </button>
+              <a
+                className="btn ghost big"
+                href="https://testnet.monadexplorer.com"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Explorer
+              </a>
+            </div>
+          </div>
+          <HeroPanel
+            isConnected={isConnected}
+            onWrongNetwork={onWrongNetwork}
+            questSummary={questSummary}
+          />
         </section>
 
         {userTriedConnect && !hasInjectedProvider() && (
@@ -121,7 +149,7 @@ export default function App() {
           </div>
         )}
 
-        <nav className="tabs">
+        <nav className="tabs" aria-label="Primary views">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -129,6 +157,9 @@ export default function App() {
               onClick={() => setTab(t.id)}
             >
               {t.label}
+              {t.id === "quests" && quests.length > 0 && (
+                <span className="tab-count">{quests.length}</span>
+              )}
             </button>
           ))}
         </nav>
@@ -170,5 +201,59 @@ export default function App() {
         />
       )}
     </div>
+  );
+}
+
+function HeroPanel({ isConnected, onWrongNetwork, questSummary }) {
+  const walletState = isConnected
+    ? onWrongNetwork
+      ? "Wrong network"
+      : "Ready"
+    : "Not connected";
+
+  return (
+    <aside className="hero-panel" aria-label="ProofDrop flow">
+      <div className="panel-topline">
+        <span>Drop status</span>
+        <strong>{walletState}</strong>
+      </div>
+      <div className="quest-meter">
+        <div>
+          <span className="meter-value">{questSummary.total || "..."}</span>
+          <span className="meter-label">active quests</span>
+        </div>
+        <div>
+          <span className="meter-value">{questSummary.text}</span>
+          <span className="meter-label">text</span>
+        </div>
+        <div>
+          <span className="meter-value">{questSummary.image}</span>
+          <span className="meter-label">photo</span>
+        </div>
+      </div>
+      <ol className="proof-route">
+        <li>
+          <span>1</span>
+          <div>
+            <strong>Submit proof</strong>
+            <p>Text or image evidence from a quest card.</p>
+          </div>
+        </li>
+        <li>
+          <span>2</span>
+          <div>
+            <strong>Verifier signs</strong>
+            <p>Backend returns an EIP-712 claim voucher.</p>
+          </div>
+        </li>
+        <li>
+          <span>3</span>
+          <div>
+            <strong>Mint badge</strong>
+            <p>Your wallet submits the signed claim on Monad.</p>
+          </div>
+        </li>
+      </ol>
+    </aside>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 
 import { BADGE_ABI } from "../abi.js";
@@ -31,9 +31,9 @@ export default function ProofModal({ quest, address, onClose }) {
     query: { enabled: Boolean(txHash) },
   });
 
-  if (txSuccess && stage !== STAGES.done) {
-    setStage(STAGES.done);
-  }
+  useEffect(() => {
+    if (txSuccess) setStage(STAGES.done);
+  }, [txSuccess]);
 
   const onPickImage = (e) => {
     const f = e.target.files?.[0];
@@ -106,6 +106,8 @@ export default function ProofModal({ quest, address, onClose }) {
         </header>
 
         <div className="modal-body">
+          <ProgressRail stage={stage} />
+
           {stage === STAGES.idle && (
             <Form
               quest={quest}
@@ -193,6 +195,30 @@ export default function ProofModal({ quest, address, onClose }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function ProgressRail({ stage }) {
+  const current = (() => {
+    if ([STAGES.idle, STAGES.verifying, STAGES.rejected].includes(stage)) return 0;
+    if ([STAGES.voucher, STAGES.claiming].includes(stage)) return 1;
+    return 2;
+  })();
+
+  return (
+    <ol className="progress-rail" aria-label="Claim progress">
+      {["Proof", "Voucher", "Mint"].map((label, index) => (
+        <li
+          key={label}
+          className={
+            index < current ? "complete" : index === current ? "current" : ""
+          }
+        >
+          <span>{index + 1}</span>
+          <strong>{label}</strong>
+        </li>
+      ))}
+    </ol>
   );
 }
 

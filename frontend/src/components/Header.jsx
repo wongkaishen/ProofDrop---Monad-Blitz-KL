@@ -8,8 +8,9 @@ export default function Header({
   return (
     <header className="header">
       <div className="container header-row">
-        <div className="brand">
+        <div className="brand" aria-label="ProofDrop">
           <div className="logo-mark" aria-hidden="true">
+            <span />
             <span />
             <span />
             <span />
