@@ -803,6 +803,58 @@ a { color: var(--accent); }
   color: var(--text);
 }
 
+.restaurant-voucher-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.restaurant-voucher {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid rgba(92, 229, 180, 0.24);
+  border-radius: 12px;
+  background:
+    linear-gradient(150deg, rgba(92, 229, 180, 0.12), transparent 42%),
+    rgba(15, 20, 23, 0.76);
+}
+.restaurant-voucher h4 {
+  margin: 8px 0 8px;
+  font-size: 22px;
+  line-height: 1.05;
+}
+.restaurant-voucher.claimed {
+  border-color: rgba(169, 116, 255, 0.44);
+  background:
+    linear-gradient(150deg, rgba(169, 116, 255, 0.16), transparent 45%),
+    rgba(20, 9, 31, 0.72);
+}
+.claim-receipt {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+.claim-receipt span {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.claim-receipt strong {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+@media (max-width: 820px) {
+  .restaurant-voucher-grid { grid-template-columns: 1fr; }
+}
+
 /* ---------- leaderboard ---------- */
 
 .lb-list {
