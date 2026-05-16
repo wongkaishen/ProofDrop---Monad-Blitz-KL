@@ -6,3 +6,4 @@ eth-account==0.13.4
 eth-utils==5.0.0
 python-dotenv==1.0.1
 Pillow==10.4.0
+openai>=1.50.0

@@ -1,0 +1,75 @@
+{
+  "users": {
+    "0xd20c75da20ff9d2049753ec1f0bf6666eb66f2ac": {
+      "wallet_address": "0xD20C75Da20FF9D2049753Ec1F0Bf6666eB66F2ac",
+      "display_name": "0xD20C\u2026F2ac",
+      "total_completed_tasks": 1,
+      "qualified_task_credits": 2,
+      "reward_points": 0,
+      "drop_points": 0,
+      "redeemed_points": 0,
+      "available_points": 0,
+      "available_vouchers": 0,
+      "leaderboard_score": 11,
+      "current_streak": 1,
+      "last_active_day": "2026-05-16",
+      "created_at": 1778920238,
+      "updated_at": 1778920381
+    }
+  },
+  "tasks": {
+    "task_000001": {
+      "id": "task_000001",
+      "title": "Deploy ProofDrop on Monad Chain",
+      "description": "I will deploy this app in monad chain and share a screenshot of the transaction.",
+      "category": "general",
+      "proof_type": "image",
+      "created_by": "0xD20C75Da20FF9D2049753Ec1F0Bf6666eB66F2ac",
+      "grading": {
+        "score": {
+          "specificity": 2,
+          "measurability": 2,
+          "effort": 2,
+          "proof_strength": 3,
+          "value": 2,
+          "repeat_risk": 0
+        },
+        "total": 11,
+        "classification": "high_value",
+        "credits_per_completion": 2,
+        "reward_eligible": true,
+        "leaderboard_eligible": true,
+        "reasons": [
+          "Specific task: deploy ProofDrop on Monad Chain.",
+          "Clear deliverable: screenshot of the transaction.",
+          "Deployment requires meaningful technical effort, though scope is not fully detailed.",
+          "Image proof is strong for showing the transaction.",
+          "A blockchain deployment can have lasting product value.",
+          "Not obvious spam or trivial filler."
+        ]
+      },
+      "status": "active",
+      "created_at": 1778920238,
+      "updated_at": 1778920238
+    }
+  },
+  "submissions": {
+    "submission_000001": {
+      "id": "submission_000001",
+      "task_id": "task_000001",
+      "user_address": "0xD20C75Da20FF9D2049753Ec1F0Bf6666eB66F2ac",
+      "proof_text": null,
+      "proof_image_hash": "2ff0e34eba64e23ef46e1996af6829ab6353e327ff8fb7787c449d51f29dbb50",
+      "proof_result": "accepted",
+      "task_credits_awarded": 2,
+      "leaderboard_points_awarded": 11,
+      "created_at": 1778920381
+    }
+  },
+  "vouchers": {},
+  "_seq": {
+    "task": 1,
+    "submission": 1,
+    "voucher": 0
+  }
+}

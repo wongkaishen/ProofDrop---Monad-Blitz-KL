@@ -12,10 +12,18 @@ import QuestList from "./components/QuestList.jsx";
 import ProofModal from "./components/ProofModal.jsx";
 import BadgeGrid from "./components/BadgeGrid.jsx";
 import WalletInstallCard from "./components/WalletInstallCard.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import Tasks from "./pages/Tasks.jsx";
+import Rewards from "./pages/Rewards.jsx";
+import Leaderboard from "./pages/Leaderboard.jsx";
 import { fetchQuests } from "./api.js";
 import { monadTestnet } from "./wagmi.js";
 
 const TABS = [
+  { id: "dashboard", label: "Dashboard" },
+  { id: "tasks", label: "Tasks" },
+  { id: "rewards", label: "Rewards" },
+  { id: "leaderboard", label: "Leaderboard" },
   { id: "quests", label: "Quests" },
   { id: "badges", label: "My Badges" },
 ];
@@ -26,7 +34,6 @@ const hasInjectedProvider = () =>
 function describeConnectError(err) {
   if (!err) return null;
   const msg = String(err.message || err);
-  // Friendly message when no wallet extension is installed.
   if (/Provider not found/i.test(msg) || /No injected/i.test(msg)) {
     return (
       "No injected wallet detected. Install MetaMask (or another EVM wallet " +
@@ -46,11 +53,14 @@ export default function App() {
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
 
-  const [tab, setTab] = useState("quests");
+  const [tab, setTab] = useState("dashboard");
   const [quests, setQuests] = useState([]);
   const [activeQuest, setActiveQuest] = useState(null);
   const [error, setError] = useState(null);
   const [userTriedConnect, setUserTriedConnect] = useState(false);
+  // Used as a cheap re-fetch signal — pages bump this to re-pull dashboards.
+  const [refreshKey, setRefreshKey] = useState(0);
+  const bumpRefresh = () => setRefreshKey((k) => k + 1);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,8 +82,6 @@ export default function App() {
   const handleConnect = () => {
     setUserTriedConnect(true);
     if (!hasInjectedProvider()) {
-      // Surface the missing-wallet hint without ever calling the connector,
-      // which would throw the raw "Provider not found" error.
       return;
     }
     const c = connectors[0];
@@ -91,19 +99,19 @@ export default function App() {
       />
 
       <main className="container">
-        <section className="hero">
+        <section className="hero compact">
           <span className="badge-pill">Built on Monad Testnet · Chain {monadTestnet.id}</span>
-          <h1>Prove it. Mint it.</h1>
+          <h1>Prove it. Earn it. Redeem it.</h1>
           <p className="subtitle">
-            ProofDrop turns small real-world actions into on-chain NFT badges.
-            Complete a quest, upload your proof, let our AI confirm it — then claim
-            your badge on the Monad blockchain.
+            ProofDrop turns daily actions into{" "}
+            <strong>Task Credits</strong>, then{" "}
+            <strong>Drop Points</strong>, then{" "}
+            <strong>Vouchers</strong>. Optionally mint an on-chain badge on
+            Monad to flex your verified work.
           </p>
         </section>
 
-        {userTriedConnect && !hasInjectedProvider() && (
-          <WalletInstallCard />
-        )}
+        {userTriedConnect && !hasInjectedProvider() && <WalletInstallCard />}
         {hasInjectedProvider() && friendlyConnectError && (
           <div className="alert error">{friendlyConnectError}</div>
         )}
@@ -133,6 +141,34 @@ export default function App() {
           ))}
         </nav>
 
+        {tab === "dashboard" && (
+          <Dashboard
+            address={address}
+            isConnected={isConnected}
+            onConnect={handleConnect}
+            refreshKey={refreshKey}
+            onGoToTasks={() => setTab("tasks")}
+            onGoToRewards={() => setTab("rewards")}
+          />
+        )}
+        {tab === "tasks" && (
+          <Tasks
+            address={address}
+            isConnected={isConnected}
+            onConnect={handleConnect}
+            onActivity={bumpRefresh}
+          />
+        )}
+        {tab === "rewards" && (
+          <Rewards
+            address={address}
+            isConnected={isConnected}
+            onConnect={handleConnect}
+            refreshKey={refreshKey}
+            onActivity={bumpRefresh}
+          />
+        )}
+        {tab === "leaderboard" && <Leaderboard address={address} />}
         {tab === "quests" && (
           <QuestList
             quests={quests}
@@ -151,13 +187,13 @@ export default function App() {
       <footer className="footer">
         <span>ProofDrop · Monad Blitz KL</span>
         <span>
-          AI verification + EIP-712 vouchers ·{" "}
+          Task Credits → Drop Points → Vouchers ·{" "}
           <a
             href="https://testnet.monadexplorer.com"
             target="_blank"
             rel="noreferrer"
           >
-            Explorer
+            Monad Explorer
           </a>
         </span>
       </footer>
