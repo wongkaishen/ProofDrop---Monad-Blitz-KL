@@ -1,11 +1,16 @@
 import { useState } from "react";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 
 import { BADGE_ABI } from "../abi.js";
 import { submitProof } from "../api.js";
+import { monadTestnet } from "../wagmi.js";
 
 const BADGE = import.meta.env.VITE_BADGE_CONTRACT;
 const EXPLORER = import.meta.env.VITE_MONAD_EXPLORER ?? "https://testnet.monadexplorer.com";
+const MONAD_CHAIN_ID_HEX = `0x${monadTestnet.id.toString(16)}`;
 
 const STAGES = {
   idle: "idle",
@@ -69,8 +74,11 @@ export default function ProofModal({ quest, address, onClose }) {
     setErrorMsg(null);
     setStage(STAGES.claiming);
     try {
+      await ensureMonadTestnet();
+
       const v = result.voucher;
       const hash = await writeContractAsync({
+        chainId: monadTestnet.id,
         address: BADGE,
         abi: BADGE_ABI,
         functionName: "claimBadge",
@@ -194,6 +202,43 @@ export default function ProofModal({ quest, address, onClose }) {
       </div>
     </div>
   );
+}
+
+async function ensureMonadTestnet() {
+  const provider = window.ethereum;
+  if (!provider?.request) {
+    throw new Error("No injected wallet found. Connect MetaMask and try again.");
+  }
+
+  const currentChainId = await provider.request({ method: "eth_chainId" });
+  if (String(currentChainId).toLowerCase() === MONAD_CHAIN_ID_HEX) return;
+
+  try {
+    await provider.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: MONAD_CHAIN_ID_HEX }],
+    });
+  } catch (e) {
+    if (e.code !== 4902) throw e;
+
+    await provider.request({
+      method: "wallet_addEthereumChain",
+      params: [
+        {
+          chainId: MONAD_CHAIN_ID_HEX,
+          chainName: monadTestnet.name,
+          nativeCurrency: monadTestnet.nativeCurrency,
+          rpcUrls: monadTestnet.rpcUrls.default.http,
+          blockExplorerUrls: [EXPLORER],
+        },
+      ],
+    });
+  }
+
+  const switchedChainId = await provider.request({ method: "eth_chainId" });
+  if (String(switchedChainId).toLowerCase() !== MONAD_CHAIN_ID_HEX) {
+    throw new Error("Please switch MetaMask to Monad Testnet before minting.");
+  }
 }
 
 function Form({ quest, text, setText, imagePreview, onPickImage, onSubmit, disabled, errorMsg }) {
